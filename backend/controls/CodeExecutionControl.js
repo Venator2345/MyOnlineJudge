@@ -1,5 +1,6 @@
 import TestCaseDAO from "../daos/TestCaseDAO.js";
 import db from '../db/database.js';
+import { spawn } from 'child_process';
 
 export default class CodeExecutionControl {
 
@@ -59,6 +60,40 @@ export default class CodeExecutionControl {
         } catch (error) {
             return null;
         }
+    }
+
+    executePython(input, userCode) {
+        return new Promise((resolve, reject) => {
+            const pythonProcess = spawn('python', ['../execute.py', userCode]);
+    
+            let output = '';
+            let error = '';
+    
+            // Enviar o código do usuário para o Python via stdin
+            pythonProcess.stdin.write(input);
+            pythonProcess.stdin.end();
+    
+            // Captura a saída do Python
+            pythonProcess.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+    
+            // Captura erros
+            pythonProcess.stderr.on('data', (data) => {
+                error += data.toString();
+            });
+    
+            // Quando o processo finalizar
+            pythonProcess.on('close', (code) => {
+                if (code === 0) {
+                    resolve(output.trim());
+                    return output;
+                } else {
+                    reject(`Erro no Python: ${error}`);
+                    return null;
+                }
+            });
+        });
     }
 
 }

@@ -20,6 +20,7 @@ CREATE TABLE attempt (
     user_code TEXT NOT NULL,
     user_id INT NOT NULL,
     exercise_id INT NOT NULL,
+    language VARCHAR(10),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
@@ -32,14 +33,7 @@ CREATE TABLE test_cases (
     FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
-CREATE TABLE attempt_test_cases (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    attempt_id INT NOT NULL,
-    test_case_id INT NOT NULL,
-    user_output VARCHAR(255) NOT NULL,
-    FOREIGN KEY (attempt_id) REFERENCES attempt(id) ON DELETE CASCADE,
-    FOREIGN KEY (test_case_id) REFERENCES test_cases(id) ON DELETE CASCADE
-);
+ALTER TABLE exercises ADD low_level BOOLEAN; 
 
 -- adicionando casos de teste
 

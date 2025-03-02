@@ -109,3 +109,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         alert("Erro ao carregar exercício!");
     }
 });
+
+document.getElementById("languages").addEventListener("change", function() {
+    const selectedLanguage = (this.value==='python')? 'Python' : 'JavaScript';
+    
+    languageSelected.textContent = 'Escreva sua solução em ' + selectedLanguage + '!';
+});

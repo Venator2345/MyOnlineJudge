@@ -23,8 +23,6 @@
             <h2> Título Exercício </h2>
             <p> Descrição </p>
 
-
-
             <div class="div-flex" style="justify-content: center;">
                 <table>
                     <thead> 
@@ -55,7 +53,17 @@
         </section>  
         
         <section class="hero">
-            <h1>Escreva sua solução em JavaScript!</h1>
+
+            <h2>Escolha a linguagem </h2>
+            <select id="languages"> 
+                <option value="js"> JavaScript </option>
+                <option value="python"> Python </option>
+            </select> 
+            
+            <hr>
+            <br>
+
+            <h2 id="languageSelected">Escreva sua solução em JavaScript!</h2>
 
             <!-- Área para o código do usuário -->
             <textarea id="userCode" placeholder="A entrada será armazenada em uma variável chamada inputString. Procure não declarar variáveis com nom nome inputString e outputString." rows="10" cols="50"></textarea>
@@ -162,6 +170,10 @@
             display: flex;
         }
 
+        #languages {
+            padding: 5px;
+            margin: 5px;
+        }
         
     </style>
 </body>
