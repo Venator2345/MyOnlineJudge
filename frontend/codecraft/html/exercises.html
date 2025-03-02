@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercícios de Programação</title>
+    <link rel="stylesheet" href="../css/index-style.css">
+</head>
+<body>
+    
+    <header>
+        <h1>Coders Assembled</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="exercises.html">Exercícios</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <aside class="sidebar">
+                <h2>Exercícios</h2>
+                <ul id="exercise-list">
+                    <!-- Os exercícios serão carregados aqui dinamicamente -->
+                </ul>
+            </aside>
+            <main class="content">
+                <h1 id="exercise-title">Selecione um exercício</h1>
+                <p id="exercise-description">O enunciado do exercício aparecerá aqui.</p>
+                <button id="start-exercise" disabled>Iniciar Exercício</button>
+            </main>
+        </div>    
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Coders Assembled. Todos os direitos reservados.</p>
+    </footer>
+    
+    <script src="../js/exercises.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+        }
+        .sidebar {
+            width: 25%;
+            background: #333;
+            color: white;
+            padding: 20px;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .sidebar li:hover {
+            background: #444;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        #start-exercise {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        #start-exercise:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #start-exercise:hover:not(:disabled) {
+            background: #0056b3;
+        }
+    </style>
+</body>
+</html>
