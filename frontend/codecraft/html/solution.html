@@ -56,8 +56,10 @@
 
             <h2>Escolha a linguagem </h2>
             <select id="languages"> 
+                <option value="cpp"> C++ </option>
                 <option value="js"> JavaScript </option>
                 <option value="python"> Python </option>
+                
             </select> 
             
             <hr>
@@ -66,7 +68,7 @@
             <h2 id="languageSelected">Escreva sua solução em JavaScript!</h2>
 
             <!-- Área para o código do usuário -->
-            <textarea id="userCode" placeholder="A entrada será armazenada em uma variável chamada inputString. Procure não declarar variáveis com nom nome inputString e outputString." rows="10" cols="50"></textarea>
+            <textarea id="userCode" rows="10" cols="50" onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'    '+v.substring(e);this.selectionStart=this.selectionEnd=s+4;return false;}"></textarea>
 
             <br>
             <h2>Entrada</h2>
@@ -76,7 +78,7 @@
             <button onclick="runCode()">Executar Código</button>
             <button class="warning-button" onclick="submitCode()">Enviar Solução</button>
 
-            <h2>Saída:</h2>
+            <h2>Saída</h2>
             <pre id="output"></pre>
         </section>
 

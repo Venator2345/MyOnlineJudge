@@ -1,7 +1,9 @@
 import TestCaseDAO from "../daos/TestCaseDAO.js";
 import db from '../db/database.js';
-import { spawn } from 'child_process';
+import { spawn, exec, execSync } from 'child_process';
 import vm from 'vm';
+import fs from 'fs';
+import { stdout } from "process";
 
 export default class CodeExecutionControl {
 
@@ -17,6 +19,9 @@ export default class CodeExecutionControl {
             console.log(testCases);
             console.log(testCases.length);
 
+            if(language === 'cpp')
+                await this.compileCpp(userCode);
+
             for(let i = 0; i < testCases.length; i++) {
 
                 switch(language) {
@@ -25,6 +30,10 @@ export default class CodeExecutionControl {
                     break;
                     case 'python':
                         outputString = await this.executePython(testCases[i].input, userCode);
+                        outputString = outputString.replaceAll('\r','');
+                    break;
+                    case 'cpp':
+                        outputString = await this.executeCpp(testCases[i].input, userCode);
                         outputString = outputString.replaceAll('\r','');
                     break;
                 }
@@ -118,6 +127,48 @@ export default class CodeExecutionControl {
                 }
             });
         });
+    }
+
+    async compileCpp(userCode) {
+        await fs.promises.writeFile('./tmp/userCode.cpp', userCode, (err) => {
+            if (err) {
+              console.error('Erro ao criar arquivo: ', err);
+              return null;
+            }  
+        });
+        execSync(`g++ ./tmp/userCode.cpp -o ./tmp/userCode.exe`); 
+    }
+
+    async executeCpp(input) {
+        return new Promise((resolve, reject) => {
+            const run = spawn('./tmp/userCode.exe');
+
+            let output = '';
+            let runError = '';
+
+            // Captura a saída
+            run.stdout.on('data', (data) => output += data.toString());
+            run.stderr.on('data', (data) => runError += data.toString());
+
+            run.on('error', (error) => {
+                console.error("Erro ao executar:", error);
+                reject(null);
+            });
+
+            run.on('close', (code) => {
+                if (code === 0) {
+                    resolve(output);
+                } else {
+                    console.error("Erro na execução:", runError);
+                    reject(null);
+                }
+            });
+
+            // **Enviar entrada após configurar os listeners**
+            run.stdin.write(input + '\n'); 
+            run.stdin.end();
+        });
+
     }
 
 }

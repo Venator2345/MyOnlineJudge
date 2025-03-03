@@ -112,7 +112,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 document.getElementById("languages").addEventListener("change", function() {
-    const selectedLanguage = (this.value==='python')? 'Python' : 'JavaScript';
-    
+    const selectedLanguage = this.options[this.selectedIndex].text;
+
+    if(this.value === 'js')
+        document.getElementById('userCode').placeholder='Em caso de escolha da linguagem Javascript, use as funções deste Online Judge: input e print';
+    else
+    document.getElementById('userCode').placeholder= '';
+
     languageSelected.textContent = 'Escreva sua solução em ' + selectedLanguage + '!';
 });

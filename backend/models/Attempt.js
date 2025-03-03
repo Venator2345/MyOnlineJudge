@@ -4,13 +4,15 @@ export default class Attempt {
     #userCode;
     #userId;
     #exerciseId;
+    #language
 
-    constructor(id, result, userCode, userId, exerciseId) {
+    constructor(id, result, userCode, userId, exerciseId, language) {
         this.#id = id;
         this.#result = result;
         this.#userCode = userCode;
         this.#userId = userId;
         this.#exerciseId = exerciseId;
+        this.#language = language;
     }
 
     get id() { 
@@ -31,6 +33,10 @@ export default class Attempt {
 
     get exerciseId() { 
         return this.#exerciseId; 
+    }
+
+    get language() { 
+        return this.#language; 
     }
 
     set id(id) { 
@@ -54,5 +60,9 @@ export default class Attempt {
     set exerciseId(exerciseId) { 
         if (exerciseId > 0) 
             this.#exerciseId = exerciseId; 
+    }
+
+    set language(language) { 
+        this.#language = language; 
     }
 }

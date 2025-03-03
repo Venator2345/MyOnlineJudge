@@ -12,7 +12,7 @@ export default class AttempControl {
             const {userCode, userId, exerciseId, language} = req.body;
 
             const attemptDAO = new AttemptDAO();
-            const attempt = new Attempt(null, null, userCode, userId, exerciseId);
+            const attempt = new Attempt(null, null, userCode, userId, exerciseId, language);
 
             const codeExecutionControl = new CodeExecutionControl();
 
