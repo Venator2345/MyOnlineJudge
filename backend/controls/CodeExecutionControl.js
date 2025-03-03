@@ -1,6 +1,7 @@
 import TestCaseDAO from "../daos/TestCaseDAO.js";
 import db from '../db/database.js';
 import { spawn } from 'child_process';
+import vm from 'vm';
 
 export default class CodeExecutionControl {
 
@@ -20,7 +21,7 @@ export default class CodeExecutionControl {
 
                 switch(language) {
                     case 'js':
-                        outputString = this.executeCode(testCases[i].input, userCode);
+                        outputString = this.executeJavascript(testCases[i].input, userCode);
                     break;
                     case 'python':
                         outputString = await this.executePython(testCases[i].input, userCode);
@@ -49,24 +50,40 @@ export default class CodeExecutionControl {
         return veredict;
     }
 
-    executeCode(testCase, userCode) {
-
+    executeJavascript(testCase, userCode) {
         try {
-            const result = new Function('inputString', 
-                `
-                let outputString = '';
-
-                console.log = function(message) {
-                    outputString += message;
-                    outputString += '\\n';
-                };
-
+            // Cria um array pra simular linhas de entrada
+            const inputLines = testCase.split('\n');
+            let inputIndex = 0;
+            
+            // Array pra capturar as saídas
+            const outputLines = [];
+            
+            // Contexto isolado com funções personalizadas
+            const sandbox = {
+                input: () => {
+                    if (inputIndex < inputLines.length) {
+                        return inputLines[inputIndex++];
+                    }
+                    return ''; // Retorna vazio se acabar
+                },
+                print: (message) => {
+                    outputLines.push(String(message));
+                }
+            };
+            
+            // Junta o código do usuário com um wrapper pra chamar a função principal
+            const wrappedCode = `
                 ${userCode}
-                
-                return outputString;`)(testCase);
-    
-            return result;
+            `;
+            
+            // Executa o código no contexto do sandbox
+            vm.runInNewContext(wrappedCode, sandbox);
+            
+            // Retorna a saída como string com \n
+            return outputLines.join('');
         } catch (error) {
+            console.error(error);
             return null;
         }
     }
