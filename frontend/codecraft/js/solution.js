@@ -53,6 +53,7 @@ async function submitCode() {
                 exerciseId: exerciseId,
                 userId: userId,
                 userCode: document.getElementById('userCode').value,
+                language: document.getElementById('languages').value
             }) 
         });
 

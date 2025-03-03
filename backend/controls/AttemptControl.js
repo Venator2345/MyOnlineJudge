@@ -9,7 +9,7 @@ export default class AttempControl {
         const connection = await db.getConnection();
 
         try {
-            const {userCode, userId, exerciseId} = req.body;
+            const {userCode, userId, exerciseId, language} = req.body;
 
             const attemptDAO = new AttemptDAO();
             const attempt = new Attempt(null, null, userCode, userId, exerciseId);
@@ -17,7 +17,7 @@ export default class AttempControl {
             const codeExecutionControl = new CodeExecutionControl();
 
             //aqui precisa obter o resultado do codigo e comparar-----
-            attempt.result = await codeExecutionControl.verifyTestCases(exerciseId, userCode);
+            attempt.result = await codeExecutionControl.verifyTestCases(exerciseId, userCode, language);
             
             //--------------------------------------------------------
 

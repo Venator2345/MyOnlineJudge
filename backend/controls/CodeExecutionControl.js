@@ -4,7 +4,7 @@ import { spawn } from 'child_process';
 
 export default class CodeExecutionControl {
 
-    async verifyTestCases(exerciseId, userCode) {
+    async verifyTestCases(exerciseId, userCode, language) {
         const connection = await db.getConnection();
         let veredict;
 
@@ -17,7 +17,16 @@ export default class CodeExecutionControl {
             console.log(testCases.length);
 
             for(let i = 0; i < testCases.length; i++) {
-                outputString = this.executeCode(testCases[i].input, userCode);
+
+                switch(language) {
+                    case 'js':
+                        outputString = this.executeCode(testCases[i].input, userCode);
+                    break;
+                    case 'python':
+                        outputString = await this.executePython(testCases[i].input, userCode);
+                        outputString = outputString.replaceAll('\r','');
+                    break;
+                }
 
                 if(outputString == testCases[i].expected_output)
                     correctAnswerCount++;
@@ -64,7 +73,7 @@ export default class CodeExecutionControl {
 
     executePython(input, userCode) {
         return new Promise((resolve, reject) => {
-            const pythonProcess = spawn('python', ['../execute.py', userCode]);
+            const pythonProcess = spawn('python', ['execute.py', userCode]);
     
             let output = '';
             let error = '';
@@ -86,11 +95,9 @@ export default class CodeExecutionControl {
             // Quando o processo finalizar
             pythonProcess.on('close', (code) => {
                 if (code === 0) {
-                    resolve(output.trim());
-                    return output;
+                    resolve(output);
                 } else {
                     reject(`Erro no Python: ${error}`);
-                    return null;
                 }
             });
         });
