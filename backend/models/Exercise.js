@@ -6,8 +6,9 @@ export default class Exercise {
     #exampleOutput;
     #exampleInput2;
     #exampleOutput2;
+    #timeLimit;
 
-    constructor(id, title, description, exampleInput, exampleOutput, exampleInput2 = "", exampleOutput2 = "") {
+    constructor(id, title, description, exampleInput, exampleOutput, exampleInput2 = "", exampleOutput2 = "", timeLimit) {
         this.#id = id;
         this.#title = title;
         this.#description = description;
@@ -15,6 +16,7 @@ export default class Exercise {
         this.#exampleOutput = exampleOutput;
         this.#exampleInput2 = exampleInput2;
         this.#exampleOutput2 = exampleOutput2;
+        this.#timeLimit = timeLimit;
     }
 
     get id() { 
@@ -43,6 +45,10 @@ export default class Exercise {
 
     get exampleOutput2() { 
         return this.#exampleOutput2; 
+    }
+
+    get timeLimit() { 
+        return this.#timeLimit; 
     }
 
     set id(id) { 

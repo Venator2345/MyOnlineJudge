@@ -34,6 +34,7 @@ CREATE TABLE test_cases (
 );
 
 ALTER TABLE exercises ADD low_level BOOLEAN; 
+ALTER TABLE exercises ADD time_limit INTEGER; 
 
 -- adicionando casos de teste
 
