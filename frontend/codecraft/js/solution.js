@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Preenche os elementos da página com os dados do exercício
         document.querySelector(".hero h2").textContent = exercise.title;
         document.querySelector(".hero p").innerHTML = exercise.description;
+        document.getElementById('timelimit-display').innerHTML += exercise.time_limit/1000 + ' segundo(s)';
 
         // Preenche a tabela de entrada e saída
         const linhasInput = exercise.example_input.split('\n');

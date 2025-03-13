@@ -7,14 +7,13 @@ import { stdout } from "process";
 
 export default class CodeExecutionControl {
 
-    async verifyTestCases(exerciseId, userCode, language) {
+    async verifyTestCases(exerciseId, userCode, language, timeLimit) {
         const connection = await db.getConnection();
-        let veredict;
+        let result = {veredict: '', output: ''};
 
         try {
             const testCaseDAO = new TestCaseDAO();
             const testCases = await testCaseDAO.getTestCasesByExercise(exerciseId, connection);
-            let outputString;
             let correctAnswerCount = 0;
             console.log(testCases);
             console.log(testCases.length);
@@ -26,80 +25,76 @@ export default class CodeExecutionControl {
 
                 switch(language) {
                     case 'js':
-                        outputString = this.executeJavascript(testCases[i].input, userCode);
+                        result = this.executeJavascript(testCases[i].input, userCode,timeLimit);
                     break;
                     case 'python':
-                        outputString = await this.executePython(testCases[i].input, userCode);
-                        outputString = outputString.replaceAll('\r','');
+                        result = await this.executePython(testCases[i].input, userCode,timeLimit);
+                        result.output = result.output.replaceAll('\r','');
                     break;
                     case 'cpp':
-                        outputString = await this.executeCpp(testCases[i].input, userCode);
-                        outputString = outputString.replaceAll('\r','');
+                        result = await this.executeCpp(testCases[i].input, timeLimit);
+                        result.output = result.output.replaceAll('\r','');
                     break;
                 }
 
-                if(outputString == testCases[i].expected_output)
+                if(result.output == testCases[i].expected_output)
                     correctAnswerCount++;
             }
 
-            if(outputString === null)
-                veredict = 'ERR';
-            else if(correctAnswerCount === testCases.length)
-                veredict = 'AC';
-            else
-                veredict = 'WA'
+            if(result.veredict === 'PENDING') {
+                if(correctAnswerCount === testCases.length)
+                    result.veredict = 'AC';
+                else
+                result.veredict = 'WA'
+            }
+
 
         }catch(error) {
             console.error(error);
-            veredict = 'ERR';
+            result.veredict = 'ERR';
         }finally {
             connection.release();
         }
 
-        return veredict;
+        return result.veredict;
     }
 
-    executeJavascript(testCase, userCode) {
+    executeJavascript(testCase, userCode, timeLimit) {
         try {
-            // Cria um array pra simular linhas de entrada
             const inputLines = testCase.split('\n');
             let inputIndex = 0;
-            
-            // Array pra capturar as saídas
             const outputLines = [];
-            
-            // Contexto isolado com funções personalizadas
+    
             const sandbox = {
                 input: () => {
                     if (inputIndex < inputLines.length) {
                         return inputLines[inputIndex++];
                     }
-                    return ''; // Retorna vazio se acabar
+                    return '';
                 },
                 print: (message) => {
                     outputLines.push(String(message));
                 }
             };
-            
-            // Junta o código do usuário com um wrapper pra chamar a função principal
-            const wrappedCode = `
-                ${userCode}
-            `;
-            
-            // Executa o código no contexto do sandbox
-            vm.runInNewContext(wrappedCode, sandbox);
-            
-            // Retorna a saída como string com \n
-            return outputLines.join('');
+    
+            const wrappedCode = `${userCode}`;
+    
+            // Executa com timeout
+            vm.runInNewContext(wrappedCode, sandbox, { timeout: timeLimit });
+    
+            return {veredict: 'PENDING', output: outputLines.join('')};
         } catch (error) {
-            console.error(error);
-            return null;
+            if (error.name === 'TimeoutError') {
+                return {veredict: 'TLE', output: ''};
+            }
+            console.error('Erro no JS:', error);
+            return {veredict: 'ERR', output: ''};
         }
     }
 
-    executePython(input, userCode) {
+    executePython(input, userCode, timeLimit) {
         return new Promise((resolve, reject) => {
-            const pythonProcess = spawn('python', ['execute.py', userCode]);
+            const pythonProcess = spawn('python', ['execute.py', userCode], {timeout: timeLimit + 1000});
     
             let output = '';
             let error = '';
@@ -119,11 +114,13 @@ export default class CodeExecutionControl {
             });
     
             // Quando o processo finalizar
-            pythonProcess.on('close', (code) => {
-                if (code === 0) {
-                    resolve(output);
+            pythonProcess.on('close', (code, signal) => {
+                if (signal === 'SIGTERM') {
+                    resolve({ veredict: 'TLE', output: '' });
+                } else if (code === 0) {
+                    resolve({veredict: 'PENDING', output: output});
                 } else {
-                    reject(`Erro no Python: ${error}`);
+                    reject({veredict: 'ERR', output: ''});
                 }
             });
         });
@@ -139,9 +136,9 @@ export default class CodeExecutionControl {
         execSync(`g++ ./tmp/userCode.cpp -o ./tmp/userCode.exe`); 
     }
 
-    async executeCpp(input) {
+    async executeCpp(input, timeLimit) {
         return new Promise((resolve, reject) => {
-            const run = spawn('./tmp/userCode.exe');
+            const run = spawn('./tmp/userCode.exe', null, {timeout: timeLimit});
 
             let output = '';
             let runError = '';
@@ -155,12 +152,13 @@ export default class CodeExecutionControl {
                 reject(null);
             });
 
-            run.on('close', (code) => {
-                if (code === 0) {
-                    resolve(output);
+            run.on('close', (code, signal) => {
+                if (signal === 'SIGTERM') {
+                    resolve({ veredict: 'TLE', output: '' });
+                } else if (code === 0) {
+                    resolve({veredict: 'PENDING', output: output});
                 } else {
-                    console.error("Erro na execução:", runError);
-                    reject(null);
+                    reject({veredict: 'ERR', output: ''});
                 }
             });
 
