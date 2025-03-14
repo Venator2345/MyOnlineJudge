@@ -9,7 +9,7 @@ export default class CodeExecutionControl {
 
     async verifyTestCases(exerciseId, userCode, language, timeLimit) {
         const connection = await db.getConnection();
-        let result = {veredict: '', output: ''};
+        let result = {veredict: 'PENDING', output: ''};
 
         try {
             const testCaseDAO = new TestCaseDAO();
@@ -21,7 +21,7 @@ export default class CodeExecutionControl {
             if(language === 'cpp')
                 await this.compileCpp(userCode);
 
-            for(let i = 0; i < testCases.length; i++) {
+            for(let i = 0; i < testCases.length && result.veredict === 'PENDING'; i++) {
 
                 switch(language) {
                     case 'js':

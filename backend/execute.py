@@ -21,4 +21,4 @@ exec_globals = {"input": custom_input}
 try:
     exec(user_code, exec_globals)
 except Exception as e:
-    print(f"Erro: {str(e)}")
+    sys.exit(1)

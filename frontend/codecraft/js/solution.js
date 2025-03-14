@@ -45,6 +45,7 @@ async function submitCode() {
     const exerciseId = urlParams.get("id");
 
     try {
+        console.log('tempo: ' + parseInt(''+ document.getElementById('timelimit-display').textContent));
         const result = await fetch('http://localhost:3000/attempts',{
             method: 'POST',
             
@@ -53,7 +54,8 @@ async function submitCode() {
                 exerciseId: exerciseId,
                 userId: userId,
                 userCode: document.getElementById('userCode').value,
-                language: document.getElementById('languages').value
+                language: document.getElementById('languages').value,
+                timeLimit: parseInt(document.getElementById('timelimit-display').innerText)
             }) 
         });
 
@@ -90,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Preenche os elementos da página com os dados do exercício
         document.querySelector(".hero h2").textContent = exercise.title;
         document.querySelector(".hero p").innerHTML = exercise.description;
-        document.getElementById('timelimit-display').innerHTML += exercise.time_limit/1000 + ' segundo(s)';
+        document.getElementById('timelimit-display').innerHTML = exercise.time_limit/1000;
 
         // Preenche a tabela de entrada e saída
         const linhasInput = exercise.example_input.split('\n');
