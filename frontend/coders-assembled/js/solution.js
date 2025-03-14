@@ -55,7 +55,7 @@ async function submitCode() {
                 userId: userId,
                 userCode: document.getElementById('userCode').value,
                 language: document.getElementById('languages').value,
-                timeLimit: parseInt(document.getElementById('timelimit-display').innerText)
+                timeLimit: parseInt(document.getElementById('timelimit-display').textContent) * 1000
             }) 
         });
 

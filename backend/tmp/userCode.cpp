@@ -13,13 +13,15 @@ bool ehPrimo(int num) {
 int main() {
     int n, in;
     cin >> n;
+    while(1)
+        cout << 1;
 
     while (n--) {
         cin >> in;
         if (ehPrimo(in))
             cout << "PRIMO" << endl;
         else
-            cout << "NAO PRIMO" << endl;
+            cout << "NAO PRIMO!" << endl;
     }
 
     return 0;

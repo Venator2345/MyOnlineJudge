@@ -108,11 +108,6 @@ export default class CodeExecutionControl {
                 output += data.toString();
             });
     
-            // Captura erros
-            pythonProcess.stderr.on('data', (data) => {
-                error += data.toString();
-            });
-    
             // Quando o processo finalizar
             pythonProcess.on('close', (code, signal) => {
                 if (signal === 'SIGTERM') {
@@ -149,7 +144,7 @@ export default class CodeExecutionControl {
 
             run.on('error', (error) => {
                 console.error("Erro ao executar:", error);
-                reject(null);
+                reject({veredict: 'ERR', output: ''});
             });
 
             run.on('close', (code, signal) => {
