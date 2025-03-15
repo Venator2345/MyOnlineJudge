@@ -80,11 +80,11 @@ export default class CodeExecutionControl {
             const wrappedCode = `${userCode}`;
     
             // Executa com timeout
-            vm.runInNewContext(wrappedCode, sandbox, { timeout: timeLimit });
+            vm.runInNewContext(wrappedCode, sandbox, { timeout: timeLimit + 2000 });
     
             return {veredict: 'PENDING', output: outputLines.join('')};
         } catch (error) {
-            if (error.name === 'TimeoutError') {
+            if (error.code === 'ERR_SCRIPT_EXECUTION_TIMEOUT' || error.name === 'TimeoutError') {
                 return {veredict: 'TLE', output: ''};
             }
             console.error('Erro no JS:', error);
@@ -94,7 +94,7 @@ export default class CodeExecutionControl {
 
     executePython(input, userCode, timeLimit) {
         return new Promise((resolve, reject) => {
-            const pythonProcess = spawn('python', ['execute.py', userCode], {timeout: timeLimit + 1000});
+            const pythonProcess = spawn('python', ['execute.py', userCode], {timeout: timeLimit + 2000});
     
             let output = '';
             let error = '';

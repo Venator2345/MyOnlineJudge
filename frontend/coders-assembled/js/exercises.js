@@ -23,10 +23,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     exercises.forEach(exercise => {
         const listItem = document.createElement("li");
-        listItem.textContent = exercise.title;
+        listItem.innerHTML = exercise.title;
         listItem.addEventListener("click", () => {
-            exerciseTitle.textContent = exercise.title;
-            exerciseDescription.textContent = exercise.description;
+            exerciseTitle.innerHTML = exercise.title;
+            exerciseDescription.innerHTML = exercise.description;
             startButton.disabled = false;
             startButton.onclick = () => {window.location.href = `solution.html?id=${exercise.id}`}
         });
