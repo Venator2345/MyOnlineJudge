@@ -8,6 +8,9 @@ export default class Asm6502 {
     #sp; // 8 bits - endereços 0x100 a 0x1ff
     #a; // 8 bits
 
+    //memória
+    #ram
+
     /*
     7  bit  0
     ---- ----
@@ -24,6 +27,11 @@ export default class Asm6502 {
     */
 
     executeCode(input, output, code) {
+        // preparar registradores e simular "lixo de memória"
+        this.#x = Math.floor(Math.random() * 255);
+        this.#y = Math.floor(Math.random() * 255);
+        this.#a = Math.floor(Math.random() * 255);
+        this.#sp = Math.floor(Math.random() * 255);
 
     }
 

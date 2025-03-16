@@ -102,20 +102,29 @@ export default class LexicalAnalyser6502 {
 
             if(token[index]==='$') {
                 // hexadecimal
-                
+                const regex = /^[A-Fa-f0-9_]+$/;
+                const substr = token.substring(index, token.length() - index);
+                correct = regex.test(substr);
             }
             else if(token[index]==='%') {
                 // binário
+                const regex = /^[01_]+$/;
+                const substr = token.substring(index, token.length() - index);
+                correct = regex.test(substr);
             }
             else if(Number.isInteger(parseInt(token[index]))) {
                 // decimal 
-
+                const regex = /^[0-9_]+$/;
+                const substr = token.substring(index, token.length() - index);
+                correct = regex.test(substr);
             }
             else {
-                
+                // pode ser nome de label
+                correct = true;
             }
         }
 
+        return correct;
     }
 
     verifyCode(code) {
@@ -128,6 +137,10 @@ export default class LexicalAnalyser6502 {
             }
         }
         return correct;
+    }
+
+    get availableInstructions() {
+        return this.#availableInstructions;
     }
     
 }
