@@ -8,8 +8,12 @@ export default class SyntaxAnalyser6502 {
 
     }
 
-    verifyOperand(operand, expectedOperand) {
+    verifyOperand(operand, expectedOperand, line) {
         let correct = true;
+        line = line.replace(',',' ');
+
+        //se tiver mais de uma vírgula, está errado
+        correct = !line.includes(',');
 
         if(operand[0] === '#') {
             correct = expectedOperand.includes('CONST');
@@ -18,7 +22,17 @@ export default class SyntaxAnalyser6502 {
             correct = expectedOperand.includes('LABEL');
         }
         else {
-            
+            if(expectedOperand.includes('ADDR') && line.length === 2)
+                correct = true;
+            else if(expectedOperand.includes('OFFSET') && line.length === 3) {
+                if(line[3] == 'x' || line[3] == 'y')
+                    correct = true;
+                else
+                    correct = false;
+            }
+            else {
+                correct = false;
+            }
         }
 
         return correct;
@@ -28,8 +42,6 @@ export default class SyntaxAnalyser6502 {
         let correct, expectedOperand;
         const lexicalAnalyser6502 = new LexicalAnalyser6502();
 
-        code = code.trim();
-        code = code.replace(/\s+/g,' ');
         this.#availableInstructions = lexicalAnalyser6502.availableInstructions;
         correct = lexicalAnalyser6502.verifyCode(code);
 
@@ -47,7 +59,7 @@ export default class SyntaxAnalyser6502 {
                 }
                 else {
                     for(let j = 1; j < line.length && correct; j++) {
-                        correct = verifyOperand(line[j], expectedOperand);
+                        correct = verifyOperand(line[j], expectedOperand,line);
                     }   
                 }
 
