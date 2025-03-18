@@ -27,12 +27,12 @@ export default class LexicalAnalyser6502 {
         this.#availableInstructions.set('tsx',[]);
         this.#availableInstructions.set('txs',[]);
         this.#availableInstructions.set('pha',[]);
-        this.#availableInstructions.set('php',[]);
+        this.#availableInstructions.set('php',[]); // NÃO IMPLEMENTADO AINDA
         this.#availableInstructions.set('pla',[]);
-        this.#availableInstructions.set('plp',[]);
+        this.#availableInstructions.set('plp',[]); // NÃO IMPLEMENTADO AINDA
 
         // operações lógicas
-        this.#availableInstructions.set('bit',['ADDR']);
+        this.#availableInstructions.set('bit',['ADDR']); // NÃO IMPLEMENTADO AINDA
         this.#availableInstructions.set('and',['CONST','ADDR','OFFSET']);
         this.#availableInstructions.set('ora',['CONST','ADDR','OFFSET']);
         this.#availableInstructions.set('eor',['CONST','ADDR','OFFSET']);
