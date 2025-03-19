@@ -13,6 +13,9 @@ export default class Asm6502 {
     //memória
     #ram
 
+    //labels
+    #availableLabels;
+
     /*
     7  bit  0
     ---- ----
@@ -125,16 +128,16 @@ export default class Asm6502 {
                 this.#x = this.#sp;
             break;
             case 'pha':
-                this.#ram[256 + this.#pc] = this.#a;
-                this.#pc--;
-                if(this.#pc < 0)
-                    this.#pc = 255;
+                this.#ram[256 + this.#sp] = this.#a;
+                this.#sp--;
+                if(this.#sp < 0)
+                    this.#sp = 255;
             break;
             case 'pla':
-                this.#a = this.#ram[256 + this.#pc];
-                this.#pc++;
-                if(this.#pc > 255)
-                    this.#pc = 0;
+                this.#a = this.#ram[256 + this.#sp];
+                this.#sp++;
+                if(this.#sp > 255)
+                    this.#sp = 0;
             break;
             case 'and':
             case 'ora':
@@ -272,14 +275,87 @@ export default class Asm6502 {
                     }
                 }
                 bit7 = result & 128 === 128? 1 : 0;
+                bit0 = result & 1;
                 if(line[0] === 'asl') {
                     this.#a = result >> 1;
                     this.#s[7] = bit7; // C
                 }
                 else if(line[0] === 'lsr') {
                     this.#a = result << 1;
+                    this.#s[7] = bit0; // C
+                }
+                else if(line[0] === 'rol') {
+                    this.#a = result >> 1;
+                    // this.#a &= 254;
+                    this.#a += this.#s[7];
                     this.#s[7] = bit7; // C
                 }
+                else {
+                    this.#a = result << 1;
+                    this.#a += this.#s[7] * 128;
+                    this.#s[7] = bit0; // C
+                } 
+
+            break;
+            case 'jmp':
+                this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'jsr':
+                this.#ram[256 + this.#sp] = this.#pc & 255; // precisa separar o endereço em duas partes
+                this.#sp--;
+                if(this.#sp < 0)
+                    this.#sp = 255;
+                this.#ram[256 + this.#sp] = this.#pc & 65280; 
+                this.#sp--;
+                if(this.#sp < 0)
+                    this.#sp = 255;
+                this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'rts':
+                result = this.#ram[256 + this.#sp] >> 8;
+                this.#sp++;
+                if(this.#sp > 255)
+                    this.#sp = 0;
+                result += this.#ram[256 + this.#sp];
+                this.#sp++;
+                if(this.#sp > 255)
+                    this.#sp = 0;
+                this.#pc = result;
+            break;
+            case 'bcc':
+                if(this.#s[7] === 0)
+                    this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'bcs':
+                if(this.#s[7] === 1)
+                    this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'beq':
+                if(this.#s[6] === 1)
+                    this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'bne':
+                if(this.#s[6] === 0)
+                    this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'bmi':
+                if(this.#s[0] === 1)
+                    this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'bpl':
+                if(this.#s[0] === 0)
+                    this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'bvc':
+                if(this.#s[1] === 0)
+                    this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'bvs':
+                if(this.#s[1] === 1)
+                    this.#pc = this.#availableLabels.get(line[1]);
+            break;
+            case 'clc':
+                this.#s[7] = 0;
             break;
             case 'rti':
                 endCode = 0;
@@ -298,6 +374,8 @@ export default class Asm6502 {
         this.#a = Math.floor(Math.random() * 255);
         this.#sp = Math.floor(Math.random() * 255);
         this.#s = [0,0,1,0,0,0,0,0]; // N, V, 1, B, D, I, Z, C
+
+        this.#availableLabels = new Map();
 
         code = code.toLowerCase();
         code = code.trim();
