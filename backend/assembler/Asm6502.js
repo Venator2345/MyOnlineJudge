@@ -43,7 +43,7 @@ export default class Asm6502 {
     }
 
     executeInstructions(line) {
-        let operand, result, endCode;
+        let operand, result, endCode, oldAccumulatorValue, bit7;
 
         endCode = undefined;
 
@@ -169,12 +169,117 @@ export default class Asm6502 {
             break;
             case 'adc':
             case 'sbc':
-                
-            break;
             case 'cmp':
             case 'cpx':
             case 'cpy':
+                operand = line[1]; 
+                if(operand[0] == '#') {
+                    //endereçamento imediato
+                    result = this.convertNumber(operand);
+                }
+                else {
+                    if(line.length === 2) {
+                        //endereçamento direto
+                        result = this.#ram[this.convertNumber(operand)];
+                    }
+                    else {
+                        //endereçamento com offset por registrador
+                        if(line[2] === 'x')
+                            result = this.#ram[this.convertNumber(operand) + this.#x];
+                        else
+                            result = this.#ram[this.convertNumber(operand) + this.#y];
+                    }
+                }
+                oldAccumulatorValue = this.#a;
+                if(line[0] === 'adc') {
+                    this.#a += result;
+                    this.#s[0] = (this.#a > 127)? 1 : 0; // N
+                    this.#s[1] = (oldAccumulatorValue <= 127 && result <= 127 && this.#a > 127)? 1 : 0; // V
+                    this.#s[6] = (this.#a === 0)? 1 : 0; // Z
+                    this.#s[7] = (this.#a > 255)? 1 : 0; // C
 
+                    if(this.#a > 255)
+                        this.#a %= 255;
+                }
+                else if(line[0] === 'sbc') {
+                    this.#a += result;
+                    this.#s[0] = (this.#a > 127)? 1 : 0; // N
+                    this.#s[1] = (oldAccumulatorValue <= 127 && result <= 127 && this.#a > 127)? 1 : 0; // V
+                    this.#s[6] = (this.#a === 0)? 1 : 0; // Z
+                    this.#s[7] = (this.#a < 255)? 1 : 0; // C
+
+                    if(this.#a < 0)
+                        this.#a = 255 - (this.#a * -1);
+                }
+                else if(line[0] === 'cpx') {
+                    this.#s[0] = (result > 127)? 1 : 0; // N
+                    this.#s[6] = (this.#x === result)? 1 : 0; // Z
+                    this.#s[7] = (this.#x > result)? 1 : 0; // C
+                }
+                else if(line[0] === 'cpy') {
+                    this.#s[0] = (result > 127)? 1 : 0; // N
+                    this.#s[6] = (this.#y === result)? 1 : 0; // Z
+                    this.#s[7] = (this.#y > result)? 1 : 0; // C
+                }
+                else {
+                    this.#s[0] = (result > 127)? 1 : 0; // N
+                    this.#s[6] = (this.#a === result)? 1 : 0; // Z
+                    this.#s[7] = (this.#a > result)? 1 : 0; // C
+                }
+            break;
+            case 'inx':
+                this.#x++;
+            break;
+            case 'iny':
+                this.#y++;
+            break;
+            case 'dex':
+                this.#x--;
+            break;
+            case 'dey':
+                this.#y--;
+            break;
+            case 'inc':
+                operand = line[1]; 
+                result = this.#ram[this.convertNumber(operand)];
+                this.#ram[result]++;
+            break;
+            case 'dec':
+                operand = line[1]; 
+                result = this.#ram[this.convertNumber(operand)];
+                this.#ram[result]--;
+            break;
+            case 'asl':
+            case 'lsr':
+            case 'ror':
+            case 'rol':
+                operand = line[1]; 
+                if(operand[0] == '#') {
+                    //endereçamento imediato
+                    result = this.convertNumber(operand);
+                }
+                else {
+                    if(line.length === 2) {
+                        //endereçamento direto
+                        result = this.#ram[this.convertNumber(operand)];
+                    }
+                    else {
+                        //endereçamento com offset por registrador
+                        if(line[2] === 'x')
+                            result = this.#ram[this.convertNumber(operand) + this.#x];
+                        else
+                            result = this.#ram[this.convertNumber(operand) + this.#y];
+                    }
+                }
+                bit7 = result & 128 === 128? 1 : 0;
+                if(line[0] === 'asl') {
+                    this.#a = result >> 1;
+                    this.#s[7] = bit7; // C
+                }
+                else if(line[0] === 'lsr') {
+                    this.#a = result << 1;
+                    this.#s[7] = bit7; // C
+                }
             break;
             case 'rti':
                 endCode = 0;
