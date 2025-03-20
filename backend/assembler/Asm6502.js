@@ -357,9 +357,32 @@ export default class Asm6502 {
             case 'clc':
                 this.#s[7] = 0;
             break;
+            case 'cld':
+                this.#s[4] = 0;
+            break;
+            case 'cli':
+                this.#s[5] = 0;
+            break;
+            case 'clv':
+                this.#s[2] = 0;
+            break;
+            case 'sec':
+                this.#s[7] = 1;
+            break;
+            case 'sed':
+                this.#s[4] = 1;
+            break;
+            case 'sei':
+                this.#s[5] = 1;
+            break;
+            case 'brk':
+            case 'nop':
+            break;
             case 'rti':
                 endCode = 0;
             break;
+            default:
+                this.#availableLabels.set(line[1].subtring(0,line[1].length - 1), this.#pc);
         }
 
         return endCode;

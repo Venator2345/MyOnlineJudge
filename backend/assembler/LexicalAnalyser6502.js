@@ -120,7 +120,7 @@ export default class LexicalAnalyser6502 {
             }
             else {
                 // pode ser nome de label
-                correct = true;
+                correct = token[token.length - 1] === ':';
             }
         }
 
