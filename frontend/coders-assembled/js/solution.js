@@ -45,6 +45,14 @@ async function submitCode() {
     const exerciseId = urlParams.get("id");
 
     try {
+        let userLanguage;
+        if(document.getElementById('languageSelected').style.visibility === 'visible') {
+            userLanguage = '6502';
+        }
+        else {
+            userLanguage = document.getElementById('languages').value;
+        }
+
         console.log('tempo: ' + parseInt(''+ document.getElementById('timelimit-display').textContent));
         const result = await fetch('http://localhost:3000/attempts',{
             method: 'POST',
@@ -54,7 +62,7 @@ async function submitCode() {
                 exerciseId: exerciseId,
                 userId: userId,
                 userCode: document.getElementById('userCode').value,
-                language: document.getElementById('languages').value,
+                language: userLanguage,
                 timeLimit: parseInt(document.getElementById('timelimit-display').textContent) * 1000
             }) 
         });
@@ -93,6 +101,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector(".hero h2").textContent = exercise.title;
         document.querySelector(".hero p").innerHTML = exercise.description;
         document.getElementById('timelimit-display').innerHTML = exercise.time_limit/1000;
+
+        if(exercise.low_level) {
+            document.getElementById('low-level-languages').style.visibility = 'visible';
+            document.getElementById('languages').style.display = 'none';
+            document.getElementById('languageSelected').innerText = 'Escreva sua solução em Assembly 6502!';
+        }
 
         // Preenche a tabela de entrada e saída
         const linhasInput = exercise.example_input.split('\n');

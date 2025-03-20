@@ -16,6 +16,9 @@ export default class Asm6502 {
     //labels
     #availableLabels;
 
+    //stdout
+    #output
+
     /*
     7  bit  0
     ---- ----
@@ -45,7 +48,7 @@ export default class Asm6502 {
         return convertedNumber;
     }
 
-    executeInstructions(line) {
+    executeInstructions(line, input) {
         let operand, result, endCode, oldAccumulatorValue, bit7;
 
         endCode = undefined;
@@ -106,8 +109,12 @@ export default class Asm6502 {
                 else
                     this.#ram[result] = this.#y;
 
-                if(result > 8191)
-                    endCode = 1; // Erro: número passa do limite de memória: 0x1fff!
+                if(result === 8192) {
+                    this.input += String.fromCharCode(this.#ram[result]);
+                }
+
+                if(result > 8192)
+                    endCode = 1; // Erro: número passa do limite de memória: 0x2001!
             break;
             case 'tax':
                 this.#x = this.#a;
@@ -389,7 +396,7 @@ export default class Asm6502 {
     }
 
     executeCode(input, code) {
-        let output = '', endCode = null;
+        this.#output = '', endCode = null;
 
         // preparar registradores e simular "lixo de memória"
         this.#x = Math.floor(Math.random() * 255);
@@ -413,11 +420,11 @@ export default class Asm6502 {
             line = lines[this.#pc].replace(',',' ');
             line = lines[this.#pc].split(' ');
 
-            endCode = this.executeInstructions(line);
+            endCode = this.executeInstructions(line, input);
 
         }
 
-
+        return this.#output;
     }
 
 

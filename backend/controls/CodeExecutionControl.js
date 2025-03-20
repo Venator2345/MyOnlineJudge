@@ -4,6 +4,7 @@ import { spawn, exec, execSync } from 'child_process';
 import vm from 'vm';
 import fs from 'fs';
 import { stdout } from "process";
+import Asm6502 from "../assembler/Asm6502.js";
 
 export default class CodeExecutionControl {
 
@@ -34,6 +35,10 @@ export default class CodeExecutionControl {
                     case 'cpp':
                         result = await this.executeCpp(testCases[i].input, timeLimit);
                         result.output = result.output.replaceAll('\r','');
+                    break;
+                    case '6502':
+                        const assembler = new Asm6502();
+                        result = assembler.executeCode(testCases[i].input, userCode);
                     break;
                 }
 
