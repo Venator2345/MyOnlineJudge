@@ -1,4 +1,4 @@
-import SyntaxAnalyser6502 from "./SyntaxAnalyser6502";
+import SyntaxAnalyser6502 from "./SyntaxAnalyser6502.js";
 
 export default class Asm6502 {
 
@@ -48,6 +48,29 @@ export default class Asm6502 {
         return convertedNumber;
     }
 
+    getResult(line) {
+        let result;
+        const operand = line[1]; 
+        if(operand[0] == '#') {
+            //endereçamento imediato
+            result = this.convertNumber(operand);
+        }
+        else {
+            if(line.length === 2) {
+                //endereçamento direto
+                result = this.#ram[this.convertNumber(operand)];
+            }
+            else {
+                //endereçamento com offset por registrador
+                if(line[2] === 'x')
+                    result = this.#ram[this.convertNumber(operand) + this.#x];
+                else
+                    result = this.#ram[this.convertNumber(operand) + this.#y];
+            }
+        }
+        return result;
+    }
+
     executeInstructions(line, input) {
         let operand, result, endCode, oldAccumulatorValue, bit7;
 
@@ -75,6 +98,12 @@ export default class Asm6502 {
                             result = this.#ram[this.convertNumber(operand) + this.#y];
                     }
                 }
+
+                if(operand[0] !== '#' && result === 8191) {
+                    result = parseInt(input[0]);
+                    input = input.shift();
+                }
+
                 if(line[0][2] === 'a')
                     this.#a = result;
                 else if(line[0][2] === 'x')
@@ -82,8 +111,11 @@ export default class Asm6502 {
                 else
                     this.#y = result;
 
-                if(result > 255)
+                if(operand[0] === '#' && result > 255)
                     endCode = 1; // Erro: número muito grande!
+                else if(result > 8192) {
+                    endCode = 1;
+                }
             break;
             case 'sta':
             case 'stx':
@@ -149,24 +181,7 @@ export default class Asm6502 {
             case 'and':
             case 'ora':
             case 'eor':
-                operand = line[1]; 
-                if(operand[0] == '#') {
-                    //endereçamento imediato
-                    result = this.convertNumber(operand);
-                }
-                else {
-                    if(line.length === 2) {
-                        //endereçamento direto
-                        result = this.#ram[this.convertNumber(operand)];
-                    }
-                    else {
-                        //endereçamento com offset por registrador
-                        if(line[2] === 'x')
-                            result = this.#ram[this.convertNumber(operand) + this.#x];
-                        else
-                            result = this.#ram[this.convertNumber(operand) + this.#y];
-                    }
-                }
+                result = this.getResult(line);
                 if(line[0] === 'and')
                     this.#a &= result;
                 else if(line[0] === 'ora')
@@ -182,24 +197,7 @@ export default class Asm6502 {
             case 'cmp':
             case 'cpx':
             case 'cpy':
-                operand = line[1]; 
-                if(operand[0] == '#') {
-                    //endereçamento imediato
-                    result = this.convertNumber(operand);
-                }
-                else {
-                    if(line.length === 2) {
-                        //endereçamento direto
-                        result = this.#ram[this.convertNumber(operand)];
-                    }
-                    else {
-                        //endereçamento com offset por registrador
-                        if(line[2] === 'x')
-                            result = this.#ram[this.convertNumber(operand) + this.#x];
-                        else
-                            result = this.#ram[this.convertNumber(operand) + this.#y];
-                    }
-                }
+                result = this.getResult(line);
                 oldAccumulatorValue = this.#a;
                 if(line[0] === 'adc') {
                     this.#a += result;
@@ -263,24 +261,7 @@ export default class Asm6502 {
             case 'lsr':
             case 'ror':
             case 'rol':
-                operand = line[1]; 
-                if(operand[0] == '#') {
-                    //endereçamento imediato
-                    result = this.convertNumber(operand);
-                }
-                else {
-                    if(line.length === 2) {
-                        //endereçamento direto
-                        result = this.#ram[this.convertNumber(operand)];
-                    }
-                    else {
-                        //endereçamento com offset por registrador
-                        if(line[2] === 'x')
-                            result = this.#ram[this.convertNumber(operand) + this.#x];
-                        else
-                            result = this.#ram[this.convertNumber(operand) + this.#y];
-                    }
-                }
+                result = this.getResult(line);
                 bit7 = result & 128 === 128? 1 : 0;
                 bit0 = result & 1;
                 if(line[0] === 'asl') {
@@ -396,6 +377,8 @@ export default class Asm6502 {
     }
 
     executeCode(input, code) {
+        let endCode = undefined;
+        input = input.split('\n');
         this.#output = '', endCode = null;
 
         // preparar registradores e simular "lixo de memória"
@@ -408,8 +391,11 @@ export default class Asm6502 {
         this.#availableLabels = new Map();
 
         code = code.toLowerCase();
-        code = code.trim();
-        code = code.replace(/\s+/g,' ');
+        code = code.split('\n');
+        for(let i = 0; i < code.length; i++) {
+            code[i] = code[i].trim();
+            code[i] = code[i].replace(/\s+/g,' ');
+        }
 
         const syntaxAnalyser6502 = new SyntaxAnalyser6502();
         syntaxAnalyser6502.verifyCode(code);
@@ -424,7 +410,9 @@ export default class Asm6502 {
 
         }
 
-        return this.#output;
+        if(endCode === 0)
+            return {veredict: 'PENDING', output: this.#output};
+        return {veredict: 'ERR', output: this.#output};
     }
 
 

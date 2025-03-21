@@ -1,4 +1,4 @@
-import LexicalAnalyser6502 from "./LexicalAnalyser6502";
+import LexicalAnalyser6502 from "./LexicalAnalyser6502.js";
 
 export default class SyntaxAnalyser6502 {
     #availableInstructions;
@@ -46,9 +46,9 @@ export default class SyntaxAnalyser6502 {
         correct = lexicalAnalyser6502.verifyCode(code);
 
         if(correct) {
-            lines = code.split('\n');
+            const lines = code;
             for(let i = 0; i < lines.length && correct; i++) {
-                line = lines[i].split(' ');
+                const line = lines[i].split(' ');
 
                 // a primeira palavra deve ser uma instrução da linguagem
                 expectedOperand = this.#availableInstructions.get(line[0]);

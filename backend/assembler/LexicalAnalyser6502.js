@@ -103,19 +103,19 @@ export default class LexicalAnalyser6502 {
             if(token[index]==='$') {
                 // hexadecimal
                 const regex = /^[A-Fa-f0-9_]+$/;
-                const substr = token.substring(index, token.length() - index);
+                const substr = token.substring(index, token.length - index);
                 correct = regex.test(substr);
             }
             else if(token[index]==='%') {
                 // binário
                 const regex = /^[01_]+$/;
-                const substr = token.substring(index, token.length() - index);
+                const substr = token.substring(index, token.length - index);
                 correct = regex.test(substr);
             }
             else if(Number.isInteger(parseInt(token[index]))) {
                 // decimal 
                 const regex = /^[0-9_]+$/;
-                const substr = token.substring(index, token.length() - index);
+                const substr = token.substring(index, token.length - index);
                 correct = regex.test(substr);
             }
             else {
@@ -129,9 +129,9 @@ export default class LexicalAnalyser6502 {
 
     verifyCode(code) {
         let correct = true;
-        lines = code.split('\n');
+        const lines = code;
         for(let i = 0; i < lines.length && correct; i++) {
-            line = lines[i].split(' ');
+            const line = lines[i].split(' ');
             for(let j = 0; j < line.length && correct; j++) {
                 correct = this.verifyToken(line[j]);
             }

@@ -46,7 +46,7 @@ async function submitCode() {
 
     try {
         let userLanguage;
-        if(document.getElementById('languageSelected').style.visibility === 'visible') {
+        if(document.getElementById('low-level-languages').style.visibility === 'visible') {
             userLanguage = '6502';
         }
         else {
@@ -102,10 +102,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector(".hero p").innerHTML = exercise.description;
         document.getElementById('timelimit-display').innerHTML = exercise.time_limit/1000;
 
-        if(exercise.low_level) {
+        if(exercise.low_level === 1) {
             document.getElementById('low-level-languages').style.visibility = 'visible';
+            
             document.getElementById('languages').style.display = 'none';
             document.getElementById('languageSelected').innerText = 'Escreva sua solução em Assembly 6502!';
+        }
+        else {
+            document.getElementById('low-level-languages').style.display = 'none';
         }
 
         // Preenche a tabela de entrada e saída

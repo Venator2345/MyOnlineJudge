@@ -55,3 +55,8 @@ INSERT INTO test_cases (exercise_id, input, expected_output) VALUES
 (2, '5\n(x + (y * z))\n((a + b) + c)\n(())\n()\n(((x)))', 'SIM\nSIM\nSIM\nSIM\nSIM\n'),
 (2, '3\n(x + y) * (z - 3\n(a + (b - c)\n(d + e) - (f + g))', 'NAO\nNAO\nNAO\n'),
 (2, '4\n(()())\n()(()())\n((())\n(())())', 'SIM\nSIM\nNAO\nNAO\n');
+
+INSERT INTO test_cases (exercise_id, input, expected_output) VALUES
+(3, '4\n9\n0\n12\n13', 'IMPAR\nPAR\nPAR\nIMPAR\n'),
+(3, '5\n9\n2\n12\n3\n71', 'IMPAR\nPAR\nPAR\nIMPAR\nIMPAR\n'),
+(3, '3\n4\n20\n30', 'PAR\nPAR\nPAR\n');
