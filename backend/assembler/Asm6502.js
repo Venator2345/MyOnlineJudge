@@ -394,14 +394,15 @@ export default class Asm6502 {
         code = code.split('\n');
         for(let i = 0; i < code.length; i++) {
             code[i] = code[i].trim();
-            code[i] = code[i].replace(/\s+/g,' ');
+            code[i] = code[i].replace(',',' ');
+            code[i] = code[i].replaceAll(/\s+/g,' ');
         }
 
         const syntaxAnalyser6502 = new SyntaxAnalyser6502();
         syntaxAnalyser6502.verifyCode(code);
 
         // ###################### ATENÇÃO: RTI SERÁ USADO PARA ENCERRAR O PROGRAMA! ################
-        lines = code.split('\n');
+        const lines = code;
         for(this.#pc = 0; endCode === undefined; this.#pc++) {
             line = lines[this.#pc].replace(',',' ');
             line = lines[this.#pc].split(' ');

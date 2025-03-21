@@ -18,18 +18,18 @@ export default class LexicalAnalyser6502 {
         this.#availableInstructions.set('sty',['ADDR','OFFSET']);
 
         // transferências entre registradores
-        this.#availableInstructions.set('tax',[]);
-        this.#availableInstructions.set('tay',[]);
-        this.#availableInstructions.set('txa',[]);
-        this.#availableInstructions.set('tya',[]);
+        this.#availableInstructions.set('tax',['NONE']);
+        this.#availableInstructions.set('tay',['NONE']);
+        this.#availableInstructions.set('txa',['NONE']);
+        this.#availableInstructions.set('tya',['NONE']);
 
         // operações com a pilha
-        this.#availableInstructions.set('tsx',[]);
-        this.#availableInstructions.set('txs',[]);
-        this.#availableInstructions.set('pha',[]);
-        this.#availableInstructions.set('php',[]); // NÃO IMPLEMENTADO AINDA
-        this.#availableInstructions.set('pla',[]);
-        this.#availableInstructions.set('plp',[]); // NÃO IMPLEMENTADO AINDA
+        this.#availableInstructions.set('tsx',['NONE']);
+        this.#availableInstructions.set('txs',['NONE']);
+        this.#availableInstructions.set('pha',['NONE']);
+        this.#availableInstructions.set('php',['NONE']); // NÃO IMPLEMENTADO AINDA
+        this.#availableInstructions.set('pla',['NONE']);
+        this.#availableInstructions.set('plp',['NONE']); // NÃO IMPLEMENTADO AINDA
 
         // operações lógicas
         this.#availableInstructions.set('bit',['ADDR']); // NÃO IMPLEMENTADO AINDA
@@ -45,10 +45,10 @@ export default class LexicalAnalyser6502 {
         this.#availableInstructions.set('cpy',['CONST','ADDR']);
 
         // incremento e decremento
-        this.#availableInstructions.set('inx',[]);
-        this.#availableInstructions.set('iny',[]);
-        this.#availableInstructions.set('dex',[]);
-        this.#availableInstructions.set('dey',[]);
+        this.#availableInstructions.set('inx',['NONE']);
+        this.#availableInstructions.set('iny',['NONE']);
+        this.#availableInstructions.set('dex',['NONE']);
+        this.#availableInstructions.set('dey',['NONE']);
         this.#availableInstructions.set('inc',['ADDR']);
         this.#availableInstructions.set('dec',['ADDR']);
 
@@ -61,7 +61,7 @@ export default class LexicalAnalyser6502 {
         // saltos e chamadas
         this.#availableInstructions.set('jmp',['LABEL']);
         this.#availableInstructions.set('jsr',['LABEL']);
-        this.#availableInstructions.set('rts',[]);
+        this.#availableInstructions.set('rts',['NONE']);
 
         // branches
         this.#availableInstructions.set('bcc',['LABEL']);
@@ -74,18 +74,18 @@ export default class LexicalAnalyser6502 {
         this.#availableInstructions.set('bvs',['LABEL']);
 
         // ações com registrador de status
-        this.#availableInstructions.set('clc',[]);
-        this.#availableInstructions.set('cld',[]);
-        this.#availableInstructions.set('cli',[]);
-        this.#availableInstructions.set('clv',[]);
-        this.#availableInstructions.set('sec',[]);
-        this.#availableInstructions.set('sed',[]);
-        this.#availableInstructions.set('sei',[]);
+        this.#availableInstructions.set('clc',['NONE']);
+        this.#availableInstructions.set('cld',['NONE']);
+        this.#availableInstructions.set('cli',['NONE']);
+        this.#availableInstructions.set('clv',['NONE']);
+        this.#availableInstructions.set('sec',['NONE']);
+        this.#availableInstructions.set('sed',['NONE']);
+        this.#availableInstructions.set('sei',['NONE']);
 
         // outras funções
-        this.#availableInstructions.set('brk',[]);
-        this.#availableInstructions.set('nop',[]);
-        this.#availableInstructions.set('rti',[]);
+        this.#availableInstructions.set('brk',['NONE']);
+        this.#availableInstructions.set('nop',['NONE']);
+        this.#availableInstructions.set('rti',['NONE']);
     }
 
     verifyToken(token) {
@@ -102,21 +102,26 @@ export default class LexicalAnalyser6502 {
 
             if(token[index]==='$') {
                 // hexadecimal
-                const regex = /^[A-Fa-f0-9_]+$/;
-                const substr = token.substring(index, token.length - index);
+                index++;
+                const regex = /^[a-f0-9_]+$/;               
+                const substr = token.substring(index, token.length);
                 correct = regex.test(substr);
             }
             else if(token[index]==='%') {
                 // binário
+                index++;
                 const regex = /^[01_]+$/;
-                const substr = token.substring(index, token.length - index);
+                const substr = token.substring(index, token.length);
                 correct = regex.test(substr);
             }
             else if(Number.isInteger(parseInt(token[index]))) {
                 // decimal 
                 const regex = /^[0-9_]+$/;
-                const substr = token.substring(index, token.length - index);
+                const substr = token.substring(index, token.length);
                 correct = regex.test(substr);
+            }
+            else if(token === 'x' || token === 'y' || token === 'a') {
+                correct = true;
             }
             else {
                 // pode ser nome de label

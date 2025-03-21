@@ -10,29 +10,33 @@ export default class SyntaxAnalyser6502 {
 
     verifyOperand(operand, expectedOperand, line) {
         let correct = true;
-        line = line.replace(',',' ');
 
         //se tiver mais de uma vírgula, está errado
-        correct = !line.includes(',');
+        let colonCounter;
+        for(let i = 0; i < line.length; i++) {
+            correct &= !line[i].includes(',');
+        }
 
-        if(operand[0] === '#') {
-            correct = expectedOperand.includes('CONST');
-        }
-        else if(!Number.isInteger(parseInt(token[index]))) {
-            correct = expectedOperand.includes('LABEL');
-        }
-        else {
-            if(expectedOperand.includes('ADDR') && line.length === 2)
-                correct = true;
-            else if(expectedOperand.includes('OFFSET') && line.length === 3) {
-                if(line[3] == 'x' || line[3] == 'y')
-                    correct = true;
-                else
-                    correct = false;
+        if(correct) {
+            if(operand[0] === '#') {
+                correct = expectedOperand.includes('CONST');
+            }
+            else if(!Number.isInteger(parseInt(operand[0])) && operand[0] !== '$' && operand[0] !== '%') {
+                correct = expectedOperand.includes('LABEL');
             }
             else {
-                correct = false;
-            }
+                if(expectedOperand.includes('ADDR') && line.length === 2)
+                    correct = true;
+                else if(expectedOperand.includes('OFFSET') && line.length === 3) {
+                    if(line[2] == 'x' || line[2] == 'y')
+                        correct = true;
+                    else
+                        correct = false;
+                }
+                else {
+                    correct = false;
+                }
+            }    
         }
 
         return correct;
@@ -50,17 +54,18 @@ export default class SyntaxAnalyser6502 {
             for(let i = 0; i < lines.length && correct; i++) {
                 const line = lines[i].split(' ');
 
-                // a primeira palavra deve ser uma instrução da linguagem
+                // a primeira palavra deve ser uma instrução da linguagem ou uma label
                 expectedOperand = this.#availableInstructions.get(line[0]);
-                correct = expectedOperand !== undefined;
+                correct = expectedOperand !== undefined || line[0][line[0].length - 1] === ':';
 
-                if(expectedOperand == []) {
+                if(line[0][line[0].length - 1] === ':') {
                     correct = line.length === 1;
                 }
-                else {
-                    for(let j = 1; j < line.length && correct; j++) {
-                        correct = verifyOperand(line[j], expectedOperand,line);
-                    }   
+                else if(expectedOperand.includes('NONE')) {
+                    correct = line.length === 1;
+                }
+                else {                    
+                    correct = this.verifyOperand(line[1], expectedOperand,line);  
                 }
 
                 
