@@ -479,17 +479,16 @@ export default class Asm6502 {
         }
 
 
-        const timeOut = false;
-        setTimeout(()=>{timeOut = true}, 1000);
+        let startTime = performance.now();
 
         // ###################### ATENÇÃO: RTI SERÁ USADO PARA ENCERRAR O PROGRAMA! ################
         const lines = code;
-        for(this.#pc = 0; endCode === undefined && !timeOut; this.#pc++) {
+        for(this.#pc = 0; endCode === undefined && performance.now() - startTime <= 1000; this.#pc++) {
             const line = lines[this.#pc].split(' ');
             endCode = this.executeInstructions(line, input);
         }
 
-        if(timeOut)
+        if(performance.now() - startTime > 1000)
             return {veredict: 'TLE', output: this.#output};
         if(endCode === 0)
             return {veredict: 'PENDING', output: this.#output};
