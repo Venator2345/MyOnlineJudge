@@ -106,7 +106,7 @@ export default class Asm6502 {
                     }
                 }
 
-                if(operand[0] !== '#' && result === 8192) {
+                if(operand[0] !== '#' && this.convertNumber(operand) === 8192) {
                     result = parseInt(input[0]);
                     input = input.shift();
                 }
