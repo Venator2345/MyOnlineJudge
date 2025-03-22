@@ -37,13 +37,14 @@ export default class Asm6502 {
     convertNumber(operand) {
         let convertedNumber;
         if(operand[1] == '$') {
-            convertedNumber = Number('0x' + operand.subtring(1,operand.length))
+            const teste = operand.substring(2,operand.length);
+            convertedNumber = Number('0x' + operand.substring(2,operand.length))
         }
         else if(operand[1] == '%') {
-            convertedNumber = Number('0b' + operand.subtring(1,operand.length))
+            convertedNumber = Number('0b' + operand.substring(2,operand.length))
         }
         else {
-            convertedNumber = Number(operand.subtring(1,operand.length))
+            convertedNumber = Number(operand.substring(1,operand.length))
         }
         return convertedNumber;
     }
@@ -142,7 +143,7 @@ export default class Asm6502 {
                     this.#ram[result] = this.#y;
 
                 if(result === 8192) {
-                    this.input += String.fromCharCode(this.#ram[result]);
+                    this.#output += String.fromCharCode(this.#ram[result]);
                 }
 
                 if(result > 8192)
@@ -313,34 +314,50 @@ export default class Asm6502 {
             case 'bcc':
                 if(this.#s[7] === 0)
                     this.#pc = this.#availableLabels.get(line[1]);
+                if(this.#pc === undefined)
+                    endCode = 1;
             break;
             case 'bcs':
                 if(this.#s[7] === 1)
                     this.#pc = this.#availableLabels.get(line[1]);
+                if(this.#pc === undefined)
+                    endCode = 1;
             break;
             case 'beq':
                 if(this.#s[6] === 1)
                     this.#pc = this.#availableLabels.get(line[1]);
+                if(this.#pc === undefined)
+                    endCode = 1;
             break;
             case 'bne':
                 if(this.#s[6] === 0)
                     this.#pc = this.#availableLabels.get(line[1]);
+                if(this.#pc === undefined)
+                    endCode = 1;
             break;
             case 'bmi':
                 if(this.#s[0] === 1)
                     this.#pc = this.#availableLabels.get(line[1]);
+                if(this.#pc === undefined)
+                    endCode = 1;
             break;
             case 'bpl':
                 if(this.#s[0] === 0)
                     this.#pc = this.#availableLabels.get(line[1]);
+                if(this.#pc === undefined)
+                    endCode = 1;
             break;
             case 'bvc':
                 if(this.#s[1] === 0)
                     this.#pc = this.#availableLabels.get(line[1]);
+                if(this.#pc === undefined)
+                    endCode = 1;
             break;
             case 'bvs':
                 if(this.#s[1] === 1)
                     this.#pc = this.#availableLabels.get(line[1]);
+                if(this.#pc === undefined)
+                    endCode = 1;
             break;
             case 'clc':
                 this.#s[7] = 0;
@@ -370,7 +387,7 @@ export default class Asm6502 {
                 endCode = 0;
             break;
             default:
-                this.#availableLabels.set(line[1].subtring(0,line[1].length - 1), this.#pc);
+                this.#availableLabels.set(line[0].substring(0,line[0].length - 1), this.#pc);
         }
 
         return endCode;
@@ -379,7 +396,7 @@ export default class Asm6502 {
     executeCode(input, code) {
         let endCode = undefined;
         input = input.split('\n');
-        this.#output = '', endCode = null;
+        this.#output = '';
 
         // preparar registradores e simular "lixo de memória"
         this.#x = Math.floor(Math.random() * 255);
@@ -390,6 +407,11 @@ export default class Asm6502 {
 
         this.#availableLabels = new Map();
 
+        this.#ram = [];
+        for(let i = 0; i <= 9000; i++) {
+            this.#ram[i] = Math.floor(Math.random() * 255);
+        }
+
         code = code.toLowerCase();
         code = code.split('\n');
         for(let i = 0; i < code.length; i++) {
@@ -399,15 +421,24 @@ export default class Asm6502 {
         }
 
         const syntaxAnalyser6502 = new SyntaxAnalyser6502();
-        syntaxAnalyser6502.verifyCode(code);
+        if(!syntaxAnalyser6502.verifyCode(code))
+            endCode = 1;
+
+        // verificar labels
+        for(let i = 0; i < code.length; i++) {
+            
+            const line = code[i].split(' ');
+
+
+
+        }
 
         // ###################### ATENÇÃO: RTI SERÁ USADO PARA ENCERRAR O PROGRAMA! ################
         const lines = code;
         for(this.#pc = 0; endCode === undefined; this.#pc++) {
-            line = lines[this.#pc].replace(',',' ');
-            line = lines[this.#pc].split(' ');
-
-            endCode = this.executeInstructions(line, input);
+            const line = lines[this.#pc].split(' ');
+            if(line[0] !== '')
+                endCode = this.executeInstructions(line, input);
 
         }
 
