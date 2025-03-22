@@ -111,12 +111,21 @@ export default class Asm6502 {
                     input = input.shift();
                 }
 
-                if(line[0][2] === 'a')
+                if(line[0][2] === 'a') {
                     this.#a = result;
-                else if(line[0][2] === 'x')
+                    this.#s[0] = (this.#a > 127)? 1 : 0; // N
+                    this.#s[6] = (this.#a === 0)? 1 : 0; // Z
+                }
+                else if(line[0][2] === 'x') {
                     this.#x = result;
-                else
+                    this.#s[0] = (this.#x > 127)? 1 : 0; // N
+                    this.#s[6] = (this.#x === 0)? 1 : 0; // Z
+                }
+                else {
                     this.#y = result;
+                    this.#s[0] = (this.#y > 127)? 1 : 0; // N
+                    this.#s[6] = (this.#y === 0)? 1 : 0; // Z
+                }
 
                 if(operand[0] === '#' && result > 255)
                     endCode = 1; // Erro: número muito grande!
@@ -157,21 +166,31 @@ export default class Asm6502 {
             break;
             case 'tax':
                 this.#x = this.#a;
+                this.#s[0] = (this.#x > 127)? 1 : 0; // N
+                this.#s[6] = (this.#x === 0)? 1 : 0; // Z
             break;
             case 'tay':
                 this.#y = this.#a;
+                this.#s[0] = (this.#y > 127)? 1 : 0; // N
+                this.#s[6] = (this.#y === 0)? 1 : 0; // Z
             break;
             case 'txa':
                 this.#a = this.#x;
+                this.#s[0] = (this.#a > 127)? 1 : 0; // N
+                this.#s[6] = (this.#a === 0)? 1 : 0; // Z
             break;
             case 'tya':
                 this.#a = this.#y;
-            break;
-            case 'tsx':
-                this.#sp = this.#x;
+                this.#s[0] = (this.#a > 127)? 1 : 0; // N
+                this.#s[6] = (this.#a === 0)? 1 : 0; // Z
             break;
             case 'txs':
+                this.#sp = this.#x;
+            break;
+            case 'tsx':
                 this.#x = this.#sp;
+                this.#s[0] = (this.#x > 127)? 1 : 0; // N
+                this.#s[6] = (this.#x === 0)? 1 : 0; // Z
             break;
             case 'pha':
                 this.#ram[256 + this.#sp] = this.#a;
@@ -284,21 +303,21 @@ export default class Asm6502 {
                 bit7 = result & 128 === 128? 1 : 0;
                 bit0 = result & 1;
                 if(line[0] === 'asl') {
-                    this.#a = result >> 1;
+                    this.#a = result << 1;
                     this.#s[7] = bit7; // C
                 }
                 else if(line[0] === 'lsr') {
-                    this.#a = result << 1;
+                    this.#a = result >> 1;
                     this.#s[7] = bit0; // C
                 }
                 else if(line[0] === 'rol') {
-                    this.#a = result >> 1;
+                    this.#a = result << 1;
                     // this.#a &= 254;
                     this.#a += this.#s[7];
                     this.#s[7] = bit7; // C
                 }
                 else {
-                    this.#a = result << 1;
+                    this.#a = result >> 1;
                     this.#a += this.#s[7] * 128;
                     this.#s[7] = bit0; // C
                 } 
@@ -459,15 +478,19 @@ export default class Asm6502 {
 
         }
 
+
+        const timeOut = false;
+        setTimeout(()=>{timeOut = true}, 1000);
+
         // ###################### ATENÇÃO: RTI SERÁ USADO PARA ENCERRAR O PROGRAMA! ################
         const lines = code;
-        for(this.#pc = 0; endCode === undefined; this.#pc++) {
+        for(this.#pc = 0; endCode === undefined && !timeOut; this.#pc++) {
             const line = lines[this.#pc].split(' ');
-            if(line[0] !== '')
-                endCode = this.executeInstructions(line, input);
-
+            endCode = this.executeInstructions(line, input);
         }
 
+        if(timeOut)
+            return {veredict: 'TLE', output: this.#output};
         if(endCode === 0)
             return {veredict: 'PENDING', output: this.#output};
         return {veredict: 'ERR', output: this.#output};
