@@ -35,16 +35,22 @@ export default class Asm6502 {
     */
 
     convertNumber(operand) {
-        let convertedNumber;
-        if(operand[1] == '$') {
+        let convertedNumber, index = 0;
+
+        if(operand[0] === '#')
+            index++;
+
+        if(operand[index] == '$') {
             const teste = operand.substring(2,operand.length);
-            convertedNumber = Number('0x' + operand.substring(2,operand.length))
+            index++;
+            convertedNumber = Number('0x' + operand.substring(index,operand.length))
         }
-        else if(operand[1] == '%') {
-            convertedNumber = Number('0b' + operand.substring(2,operand.length))
+        else if(operand[index] == '%') {
+            index++;
+            convertedNumber = Number('0b' + operand.substring(index,operand.length))
         }
         else {
-            convertedNumber = Number(operand.substring(1,operand.length))
+            convertedNumber = Number(operand.substring(index,operand.length))
         }
         return convertedNumber;
     }
@@ -100,7 +106,7 @@ export default class Asm6502 {
                     }
                 }
 
-                if(operand[0] !== '#' && result === 8191) {
+                if(operand[0] !== '#' && result === 8192) {
                     result = parseInt(input[0]);
                     input = input.shift();
                 }
@@ -114,7 +120,7 @@ export default class Asm6502 {
 
                 if(operand[0] === '#' && result > 255)
                     endCode = 1; // Erro: número muito grande!
-                else if(result > 8192) {
+                else if(result > 8193) {
                     endCode = 1;
                 }
             break;
@@ -142,11 +148,11 @@ export default class Asm6502 {
                 else
                     this.#ram[result] = this.#y;
 
-                if(result === 8192) {
+                if(result === 8193) {
                     this.#output += String.fromCharCode(this.#ram[result]);
                 }
 
-                if(result > 8192)
+                if(result > 8193)
                     endCode = 1; // Erro: número passa do limite de memória: 0x2001!
             break;
             case 'tax':
@@ -238,25 +244,37 @@ export default class Asm6502 {
             break;
             case 'inx':
                 this.#x++;
+                this.#s[0] = (this.#x > 127)? 1 : 0; // N
+                this.#s[6] = (this.#x === 0)? 1 : 0; // Z
             break;
             case 'iny':
                 this.#y++;
+                this.#s[0] = (this.#y > 127)? 1 : 0; // N
+                this.#s[6] = (this.#y === 0)? 1 : 0; // Z
             break;
             case 'dex':
                 this.#x--;
+                this.#s[0] = (this.#x > 127)? 1 : 0; // N
+                this.#s[6] = (this.#x === 0)? 1 : 0; // Z
             break;
             case 'dey':
                 this.#y--;
+                this.#s[0] = (this.#y > 127)? 1 : 0; // N
+                this.#s[6] = (this.#y === 0)? 1 : 0; // Z
             break;
             case 'inc':
                 operand = line[1]; 
                 result = this.#ram[this.convertNumber(operand)];
                 this.#ram[result]++;
+                this.#s[0] = (this.#ram[result] > 127)? 1 : 0; // N
+                this.#s[6] = (this.#ram[result] === 0)? 1 : 0; // Z
             break;
             case 'dec':
                 operand = line[1]; 
                 result = this.#ram[this.convertNumber(operand)];
                 this.#ram[result]--;
+                this.#s[0] = (this.#ram[result] > 127)? 1 : 0; // N
+                this.#s[6] = (this.#ram[result] === 0)? 1 : 0; // Z
             break;
             case 'asl':
             case 'lsr':
@@ -386,8 +404,7 @@ export default class Asm6502 {
             case 'rti':
                 endCode = 0;
             break;
-            default:
-                this.#availableLabels.set(line[0].substring(0,line[0].length - 1), this.#pc);
+            
         }
 
         return endCode;
@@ -420,6 +437,14 @@ export default class Asm6502 {
             code[i] = code[i].replaceAll(/\s+/g,' ');
         }
 
+        // remover linhas vazias
+        let noBlankLineCode = [];
+        for(let i = 0; i < code.length; i++) {
+            if(code[i] !== '')
+                noBlankLineCode.push(code[i]);
+        }
+        code = noBlankLineCode;
+
         const syntaxAnalyser6502 = new SyntaxAnalyser6502();
         if(!syntaxAnalyser6502.verifyCode(code))
             endCode = 1;
@@ -428,7 +453,8 @@ export default class Asm6502 {
         for(let i = 0; i < code.length; i++) {
             
             const line = code[i].split(' ');
-
+            if(line[0][line[0].length - 1] === ':')
+                this.#availableLabels.set(line[0].substring(0,line[0].length - 1), i);
 
 
         }
