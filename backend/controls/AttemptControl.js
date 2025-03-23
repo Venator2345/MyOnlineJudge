@@ -34,6 +34,22 @@ export default class AttempControl {
     }
 
     async getAttemptsByUser(req, res) {
+        const connection = await db.getConnection();
 
+        try {
+            const {userId} = req.params;
+
+            const attemptDAO = new AttemptDAO();
+            const attempts = await attemptDAO.getAttemptsByUserId(userId, connection);
+
+            return res.status(200).json(attempts);
+        }
+        catch(error) {
+            console.error(error);
+            return res.status(500).json({error: 'Erro no servidor'});
+        }
+        finally {
+            connection.release();
+        }
     }
 }

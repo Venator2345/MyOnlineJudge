@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coders Assembled</title>
+    <link rel="stylesheet" href="../css/index-style.css">
+</head>
+<body>
+    <header>
+        <h1>Coders Assembled</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="exercises.html">Exercícios</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="login.html">Registrar-se</a></li>
+                <li><a href="stats.html">Estatísticas</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Estatísticas </h2>
+        <h3 id="userName"> </h3>
+        
+        <spam id="attemptCounter"> </spam>
+        <br>
+        <spam id="correctAnswerCounter"> </spam>
+        <br>
+
+        <hr> <br>
+        <canvas id="myChart" style="width:100%;max-width:600px; background-color: #ddd; margin: 0 auto"></canvas>
+        <br>
+
+        <hr> <br>
+        <canvas id="myChartLanguages" style="width:100%;max-width:600px; background-color: #ddd; margin: 0 auto"></canvas>
+        <br>
+        
+        <hr> <br>
+        
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Coders Assembled. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="../js/stats.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</body>
+</html>

@@ -6,4 +6,11 @@ export default class AttemptDAO {
         );
         return result;
     }
+
+    async getAttemptsByUserId(userId, connection) {
+        const [result] = await connection.execute(
+            "SELECT * FROM attempt WHERE user_id = ?", [userId]
+        );
+        return result;
+    }
 }
