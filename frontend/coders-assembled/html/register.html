@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="../css/login-style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Crie uma conta</h2>
+        <form id="registerForm">
+            <input type="text" id="username" placeholder="Nome de usuário" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button id="button-submit" type="submit">Criar Conta</button>
+            <button onclick="window.history.back();"> Voltar </button>
+        </form>
+        <p id="message"></p>
+    </div>
+    
+    <script src="../js/register.js"></script>
+</body>
+</html>

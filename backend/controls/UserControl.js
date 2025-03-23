@@ -21,6 +21,24 @@ export default class UserControl {
         }
     }
 
+    getUserByName = async(req, res) => {
+        const connection = await db.getConnection();
+
+        try {
+            const {name} = req.params;
+            const userDAO = new UserDAO();
+            const user = await userDAO.getUserByName(name,connection);
+
+            return res.status(200).json(user);
+
+        } catch(error) {
+            console.error(error);
+            return res.status(500).json({ error: "Erro no servidor" });
+        } finally {
+            connection.release(); 
+        }
+    }
+
     createUser = async(req, res) => {
         const connection = await db.getConnection();
 
