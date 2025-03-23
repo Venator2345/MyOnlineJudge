@@ -429,7 +429,7 @@ export default class Asm6502 {
         return endCode;
     }
 
-    executeCode(input, code) {
+    executeCode(input, code, timeLimit) {
         let endCode = undefined;
         input = input.split('\n');
         this.#output = '';
@@ -483,12 +483,12 @@ export default class Asm6502 {
 
         // ###################### ATENÇÃO: RTI SERÁ USADO PARA ENCERRAR O PROGRAMA! ################
         const lines = code;
-        for(this.#pc = 0; endCode === undefined && performance.now() - startTime <= 1000; this.#pc++) {
+        for(this.#pc = 0; endCode === undefined && performance.now() - startTime <= timeLimit; this.#pc++) {
             const line = lines[this.#pc].split(' ');
             endCode = this.executeInstructions(line, input);
         }
 
-        if(performance.now() - startTime > 1000)
+        if(performance.now() - startTime > timeLimit)
             return {veredict: 'TLE', output: this.#output};
         if(endCode === 0)
             return {veredict: 'PENDING', output: this.#output};

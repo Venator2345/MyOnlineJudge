@@ -33,4 +33,7 @@ export default class AttempControl {
         }
     }
 
+    async getAttemptsByUser(req, res) {
+
+    }
 }

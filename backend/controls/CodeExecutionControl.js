@@ -38,7 +38,7 @@ export default class CodeExecutionControl {
                     break;
                     case '6502':
                         const assembler = new Asm6502();
-                        result = assembler.executeCode(testCases[i].input, userCode);
+                        result = assembler.executeCode(testCases[i].input, userCode, timeLimit);
                     break;
                 }
 
