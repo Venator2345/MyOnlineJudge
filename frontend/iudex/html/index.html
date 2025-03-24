@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> iudex  </title>
+    <link rel="stylesheet" href="../css/index-style.css">
+</head>
+<body>
+    <header>
+        <h1> IVDEX </h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="exercises.html">Exercícios</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html">Registrar-se</a></li>
+                <li><a href="stats.html">Estatísticas</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2> IVDEX - AD ASTRA PER ASPERA </h2>
+        <p>Melhore suas habilidades em algoritmos e estruturas de dados resolvendo desafios.</p>
+        <a href="exercises.html" class="btn">Comece Agora</a>
+    </section>
+    <hr>
+    <section class="hero">
+        <h2> Objetivos do IVDEX!</h2>
+        <p> 
+            Esta plataforma busca preparar os estudantes para lidar com questões sobre programação 
+            dinâmica, estruturas de dados, matemática e outros assuntos. Além disso, ela serve para
+            disseminar o amor pelas linguagens de montagem oferencendo questões para resolver com 
+            Assembly! 
+        </p>
+    </section>
+    <hr>
+    <section class="hero">
+        <h2> Observações e exclarecimento de dúvidas </h2>
+        <br>
+        <h3 style="color: orange"> 1 - E/S no Javascript </h3>
+        <p> 
+            Para leitura e escrita, use os comandos deste juiz online: <b>input</b> e <b>print</b>. Eles funcionam de maneira 
+            parecida com os comandos de E/S da linguagem Python. Exemplo:
+        </p>
+        <p> 
+            let num = input(); 
+        </p>
+        <p>
+            A variável receberá uma string, não um número. Faça a conversão se necessário.
+        </p>
+
+        <h3 style="color: orange"> 2 - E/S no Assembly 6502 </h3>
+        <p> 
+            Considere um hardware com E/S mapeada em memória, como o console de viedeogame NES. 
+            A escrita é feita gravando um valor no endereço 0x2001 e a leitura da entrada ocorre 
+            ao ler do endereço 0x2000. 
+        </p>
+        <p>
+            Cada operação de leitura pega um número por vez assim como cada operação de escrita 
+            envia um número por vez ao dispositvo de saída, que o converterá para um caractere 
+            de acordo com a tabela ASCII.
+        </p>
+        <p>
+            ldx #$41           
+        </p>
+        <p>
+            stx $2001
+        </p>
+        <p>
+            As instruções acima vão adicionar o caractere "A" para a saída do programa.
+        </p>
+        <p>
+            Qualquer gravação em um endereço acima de 0x2001 será entendida como uma violação de segurança e será impedida.
+        </p>
+
+        <h3 style="color: orange"> 3 - Mais sobre o Assembly 6502 </h3>
+        <p>
+            Considere que o código escrito será executado em uma interrupção. Dessa forma, procure usar a instrução <b>rti</b>
+            na última linha de código para encerrar o programa.
+        </p>
+        <p>
+            O processador simulado pelo Juiz é um Ricoh 2A03, não um MOS 6502. Dessa forma, não se trabalha com o modo decimal.
+        </p>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 IVDEX. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
