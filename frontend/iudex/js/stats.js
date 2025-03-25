@@ -30,41 +30,51 @@ window.onload = async () => {
 function fillStats(attempts)  {
     console.log(attempts);
 
-    let qtdAc=0, qtdTle=0, qtdErr=0, qtdWa=0;
-    let qtd6502=0, qtdJs=0, qtdCpp=0, qtdPython=0;
-    for(let i = 0; i < attempts.length; i++) {
-        if(attempts[i].result === 'AC')
-            qtdAc++;
-        else if(attempts[i].result === 'TLE')
-            qtdTle++;
-        else if(attempts[i].result === 'WA')
-            qtdWa++;
-        else
-            qtdErr++;
+    let qtdAc = 0, qtdTle = 0, qtdErr = 0, qtdWa = 0;
+    let qtd6502 = 0, qtdJs = 0, qtdCpp = 0, qtdPython = 0;
+    const solvedExercises = new Set(); // Set pra rastrear exercícios únicos com AC
 
-        if(attempts[i].language === '6502')
+    for (let i = 0; i < attempts.length; i++) {
+        // Contagem de resultados (conta todas as tentativas)
+        if (attempts[i].result === 'AC') {
+            // Só adiciona ao contador de AC se o exercício ainda não foi resolvido
+            if (!solvedExercises.has(attempts[i].exercise_id)) {
+                qtdAc++;
+                solvedExercises.add(attempts[i].exercise_id);
+            }
+        } else if (attempts[i].result === 'TLE') {
+            qtdTle++;
+        } else if (attempts[i].result === 'WA') {
+            qtdWa++;
+        } else {
+            qtdErr++;
+        }
+
+        // Contagem de linguagens (conta todas as tentativas)
+        if (attempts[i].language === '6502') {
             qtd6502++;
-        else if(attempts[i].language === 'js')
+        } else if (attempts[i].language === 'js') {
             qtdJs++;
-        else if(attempts[i].language === 'python')
+        } else if (attempts[i].language === 'python') {
             qtdPython++;
-        else
+        } else {
             qtdCpp++;
+        }
     }
 
     document.getElementById('attemptCounter').innerHTML = 'tentativas: ' + attempts.length;
     document.getElementById('correctAnswerCounter').innerHTML = 'exercícios resolvidos: ' + qtdAc;
 
     const xValues = ["AC", "WA", "ERR", "TLE"];
-    const yValues = [qtdAc, qtdWa, qtdErr, qtdTle];
+    const yValues = [solvedExercises.size, qtdWa, qtdErr, qtdTle]; // Usa o tamanho do Set no gráfico pra AC
     const barColors = [
-    "#0f0",
-    "#f00",
-    "#fa0",
-    "#00f"
+        "#0f0",
+        "#f00",
+        "#fa0",
+        "#00f"
     ];
 
-    const xValuesLanguage = ["ASM 6502", "Pyhton", "C++", "Javascript"];
+    const xValuesLanguage = ["ASM 6502", "Python", "C++", "Javascript"];
     const yValuesLanguage = [qtd6502, qtdPython, qtdCpp, qtdJs];
     const barColorsLanguage = [
     "#333",

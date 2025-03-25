@@ -1,10 +1,10 @@
 CREATE TABLE exercises (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
-    description VARCHAR(500) NOT NULL,
-    example_input VARCHAR(255) NOT NULL,
+    description VARCHAR(1000) NOT NULL,
+    example_input VARCHAR(500) NOT NULL,
     example_output VARCHAR(255) NOT NULL,
-    example_input2 VARCHAR(255),
+    example_input2 VARCHAR(500),
     example_output2 VARCHAR(255)
 );
 
@@ -27,7 +27,7 @@ CREATE TABLE attempt (
 
 CREATE TABLE test_cases (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    input VARCHAR(255) NOT NULL,
+    input VARCHAR(1000) NOT NULL,
     expected_output VARCHAR(255) NOT NULL,
     exercise_id INT NOT NULL,
     FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
