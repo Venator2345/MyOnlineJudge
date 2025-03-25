@@ -5,7 +5,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     const password = document.getElementById("password").value;
     const messageElement = document.getElementById("message");
 
-    let user = await fetch(`http://localhost:3000/users/${username}`, {
+    let user = await fetch(`https://myonlinejudge.onrender.com/users/${username}`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'}
     });
@@ -16,7 +16,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
         messageElement.textContent = "Já existe um usuário com este nome!";
     }
     else {
-        const response = await fetch("http://localhost:3000/users", {
+        const response = await fetch("https://myonlinejudge.onrender.com/users", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: username, password: password })

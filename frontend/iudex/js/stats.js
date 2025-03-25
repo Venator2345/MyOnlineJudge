@@ -18,7 +18,7 @@ window.onload = async () => {
     document.getElementById('userName').innerHTML = 'Nome de usuário: <b>' + userName + '</b>';
     
 
-    const result = await fetch(`http://localhost:3000/attempts/${userId}`, {
+    const result = await fetch(`https://myonlinejudge.onrender.com/attempts/${userId}`, {
         method: 'GET',
         headers: { "Content-Type": "application/json" }
     });

@@ -54,7 +54,7 @@ async function submitCode() {
         }
 
         console.log('tempo: ' + parseInt(''+ document.getElementById('timelimit-display').textContent));
-        const result = await fetch('http://localhost:3000/attempts',{
+        const result = await fetch('https://myonlinejudge.onrender.com/attempts',{
             method: 'POST',
             
             headers: {'Content-Type' : 'application/json'},
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/exercises/${exerciseId}`, {
+        const response = await fetch(`https://myonlinejudge.onrender.com/exercises/${exerciseId}`, {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         });

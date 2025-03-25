@@ -6,7 +6,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     const messageElement = document.getElementById("message");
 
     try {
-        const response = await fetch("http://localhost:3000/auth/login", {
+        const response = await fetch("https://myonlinejudge.onrender.com/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: username, password: password })

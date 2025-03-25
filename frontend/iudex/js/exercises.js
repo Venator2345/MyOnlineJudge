@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let exercises = [];
 
     try {
-        const response = await fetch('http://localhost:3000/exercises',{
+        const response = await fetch('https://myonlinejudge.onrender.com/exercises',{
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         });    
