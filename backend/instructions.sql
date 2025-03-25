@@ -36,6 +36,18 @@ CREATE TABLE test_cases (
 ALTER TABLE exercises ADD low_level BOOLEAN; 
 ALTER TABLE exercises ADD time_limit INTEGER; 
 
+-- adicionando exercicios
+
+insert into exercises(title, description, example_input, example_output, example_input2, example_output2, low_level, time_limit) values (
+'Número Primo',
+'Faça um programa para verificar se os números recebidos são ou não primos. A primeira linha da entrada é um valor n (0 < n < 1000) e as próximas n linhas contêm um número inteiro i<sub>n</sub> (0 < i<sub>n</sub> < 200). Imprima "PRIMO" (sem aspas) se o número é primo ou "NAO PRIMO" (sem aspas) se o número não é primo.',
+'5\n1\n2\n8\n5\n11',
+'NAO PRIMO\nPRIMO\nNAO PRIMO\nPRIMO\nPRIMO',
+NULL,
+NULL,
+0,
+1000);
+
 -- adicionando casos de teste
 
 INSERT INTO test_cases (exercise_id, input, expected_output) 
